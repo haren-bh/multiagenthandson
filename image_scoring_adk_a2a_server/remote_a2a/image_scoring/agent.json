@@ -1,0 +1,25 @@
+{
+  "name": "image_scoring",
+  "description": "Agent that generates images based on user prompts and scores their adherence to the prompt.",
+  "url": "http://localhost:8001/a2a/image_scoring",
+  "version": "1.0.0",
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["image/png", "text/plain"],
+  "capabilities": {
+    "streaming": true,
+    "functions": true
+  },
+  "skills": [
+    {
+      "id": "generate_and_score_image",
+      "name": "Generate and Score Image",
+      "description": "Generates an image from a given text prompt and then evaluates how well the generated image adheres to the original prompt, providing a score.",
+      "tags": ["image generation", "image scoring", "evaluation", "AI art"],
+      "examples": [
+        "Generate an image of a futuristic city at sunset",
+        "Create an image of a cat playing a piano",
+        "Show me an image of a serene forest with a hidden waterfall"
+      ]
+    }
+  ]
+}

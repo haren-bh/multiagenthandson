@@ -1,0 +1,56 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+# C extensions
+*.so
+*.lock
+# Distribution / packaging
+.Python
+build/
+dist/
+eggs/
+*.egg-info/
+*.egg
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+.tox/
+.coverage
+.cache
+.pytest_cache/
+
+# Sphinx documentation
+docs/_build/
+
+# PyInstaller
+#  usually added to MANIFEST.in as well
+#  via: ``pyinstaller --add-data "README;."``
+*.manifest
+*.spec
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Virtual environment
+.env/
+venv/
+env/
+/venv
+/env
+.venv
+
+# Editors and IDEs
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# MyPy
+.mypy_cache/
+
