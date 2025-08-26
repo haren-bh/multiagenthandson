@@ -5,7 +5,7 @@ import glob # To easily find the wheel file
 
 PROJECT_ID = "" #TODO change this 変更してください
 LOCATION = "us-central1"
-STAGING_BUCKET = "" #TODO change this　変更してください
+STAGING_BUCKET = "" #TODO change this　変更してください, 例: gs://bucket-name
 
 from vertexai import agent_engines
 
