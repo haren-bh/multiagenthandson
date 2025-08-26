@@ -3,9 +3,9 @@ from .agent import root_agent
 import os
 import glob # To easily find the wheel file
 
-PROJECT_ID = "datapipeline-372305" #change this
+PROJECT_ID = "" #TODO change this 変更してください
 LOCATION = "us-central1"
-STAGING_BUCKET = "gs://haren-genai-data" #change this
+STAGING_BUCKET = "" #TODO change this　変更してください
 
 from vertexai import agent_engines
 
@@ -15,11 +15,12 @@ vertexai.init(
     staging_bucket=STAGING_BUCKET,
 )
 
+
 remote_app = agent_engines.create(
     agent_engine=root_agent,
-    requirements=open(os.path.join(os.getcwd(), "requirements.txt")).readlines()+["Users/bharen/code/cloud/Agents/image-scoring/image_scoring/dist/image_scoring-0.1.0-py3-none-any.whl"],
+    requirements=open(os.path.join(os.getcwd(), "requirements.txt")).readlines()+["./dist/image_scoring-0.1.0-py3-none-any.whl"],#TODO 確認
     extra_packages=[
-        "/Users/bharen/code/cloud/Agents/image-scoring/image_scoring/dist/image_scoring-0.1.0-py3-none-any.whl", # Add the GCS URI of your wheel file
+        "./dist/image_scoring-0.1.0-py3-none-any.whl", #TODO 確認
     ]
 )
 

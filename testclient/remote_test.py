@@ -1,12 +1,12 @@
 import vertexai
 
-PROJECT_ID = "datapipeline-372305"
+PROJECT_ID = ""#TODO change this　変更してください
 LOCATION = "us-central1"
-STAGING_BUCKET = "gs://haren-genai-data"
+STAGING_BUCKET = "gs://xxx"#TODO change this　変更してください
 
 from vertexai import agent_engines
 
-reasoning_engine_id="projects/85469421903/locations/us-central1/reasoningEngines/7369674597261639680"
+reasoning_engine_id=""#TODO change this　変更してください
 
 #remote agents.
 vertexai.init(
