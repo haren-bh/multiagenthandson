@@ -30,7 +30,7 @@ def set_session(callback_context: CallbackContext):
 # - The maximum number of iterations is reached
 
 image_generation_scoring_agent = SequentialAgent(
-    name="image_scoring",
+    name="image_generation_scoring_agent",
 
     description=(
         """

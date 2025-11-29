@@ -4,6 +4,11 @@ from google.genai import types
 from google.adk.tools import ToolContext
 from google.cloud import storage
 from .... import config
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 client = genai.Client(
@@ -34,7 +39,10 @@ async def generate_images(imagen_prompt: str, tool_context: ToolContext):
                 artifact_name = f"generated_image_" + counter + ".png"
                 # call save to gcs function
                 if config.GCS_BUCKET_NAME:
+                    logger.info(f"DEBUG: GCS_BUCKET_NAME is set to {config.GCS_BUCKET_NAME}. Calling save_to_gcs...")
                     save_to_gcs(tool_context, image_bytes, artifact_name, counter)
+                else:
+                    logger.info("DEBUG: GCS_BUCKET_NAME is NOT set. Skipping save_to_gcs.")
 
                 # Save as ADK artifact (optional, if still needed by other ADK components)
                 report_artifact = types.Part.from_bytes(
@@ -42,7 +50,7 @@ async def generate_images(imagen_prompt: str, tool_context: ToolContext):
                 )
 
                 await tool_context.save_artifact(artifact_name, report_artifact)
-                print(f"Image also saved as ADK artifact: {artifact_name}")
+                logger.info(f"Image also saved as ADK artifact: {artifact_name}")
 
                 return {
                     "status": "success",
@@ -52,15 +60,15 @@ async def generate_images(imagen_prompt: str, tool_context: ToolContext):
         else:
             # model_dump_json might not exist or be the best way to get error details
             error_details = str(response)  # Or a more specific error field if available
-            print(f"No images generated. Response: {error_details}")
+            logger.error(f"No images generated. Response: {error_details}")
             return {
                 "status": "error",
                 "message": f"No images generated. Response: {error_details}",
             }
 
     except Exception as e:
-
-        return {"status": "error", "message": "No images generated.  {e}"}
+        logger.error(f"Error generating images: {e}")
+        return {"status": "error", "message": f"No images generated.  {e}"}
 
 
 def save_to_gcs(tool_context: ToolContext, image_bytes, filename: str, counter: str):
@@ -73,19 +81,23 @@ def save_to_gcs(tool_context: ToolContext, image_bytes, filename: str, counter: 
     unique_filename = filename
     gcs_blob_name = f"{current_date_str}/{unique_id}/{unique_filename}"
 
+    logger.info(f"DEBUG: Starting save_to_gcs with bucket: {bucket_name}")
+    logger.info(f"DEBUG: Target blob name: {gcs_blob_name}")
+
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(gcs_blob_name)
 
     try:
         blob.upload_from_string(image_bytes, content_type="image/png")
         gcs_uri = f"gs://{bucket_name}/{gcs_blob_name}"
+        logger.info(f"DEBUG: Successfully uploaded to GCS: {gcs_uri}")
 
         # Store GCS URI in session context
         # Store GCS URI in session context
         tool_context.state["generated_image_gcs_uri_" + counter] = gcs_uri
 
     except Exception as e_gcs:
-
+        logger.error(f"DEBUG: Error uploading to GCS: {e_gcs}")
         # Decide if this is a fatal error for the tool
         return {
             "status": "error",

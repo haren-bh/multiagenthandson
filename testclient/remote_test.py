@@ -3,6 +3,11 @@ from vertexai import agent_engines
 from typing import Iterator, Dict, Any
 import logging
 import asyncio
+import os
+from dotenv import load_dotenv
+# Load environment variables from image_scoring/.env
+env_path = os.path.join(os.path.dirname(__file__), "..", "image_scoring", ".env")
+load_dotenv(env_path)
 
 
 async def call_agent_engine(
@@ -55,15 +60,18 @@ def get_agent_engine_list(project_id,location,staging_bucket):
     return engines
 
 
+
+
+PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
+LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+STAGING_BUCKET = f"gs://{os.getenv('GOOGLE_CLOUD_STORAGE_BUCKET')}"
+
 if __name__ == "__main__":
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
     )
-
-    PROJECT_ID = ""  # TODO: Change this
-    LOCATION = "us-central1"
-    STAGING_BUCKET = "gs://xxxx"  # TODO: Change this
     REASONING_ENGINE_ID = "projects/xxx/locations/us-central1/reasoningEngines/xxx"  # TODO: Change this
+    REASONING_ENGINE_ID="projects/85469421903/locations/us-central1/reasoningEngines/428031080600174592"
 
     prompt = "Create image of a cat"
 
