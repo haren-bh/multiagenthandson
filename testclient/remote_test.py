@@ -71,7 +71,7 @@ if __name__ == "__main__":
         level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
     )
     REASONING_ENGINE_ID = "projects/xxx/locations/us-central1/reasoningEngines/xxx"  # TODO: Change this
-    REASONING_ENGINE_ID="projects/85469421903/locations/us-central1/reasoningEngines/428031080600174592"
+    #REASONING_ENGINE_ID="projects/85469421903/locations/us-central1/reasoningEngines/428031080600174592"
 
     prompt = "Create image of a cat"
 
