@@ -1,0 +1,387 @@
+manifest:
+  version: "0.1.3"
+  schema: https://a2as.org/cert/schema
+  subject:
+    name: haren-bh/multiagenthandson
+    source: https://github.com/haren-bh/multiagenthandson
+    branch: main
+    commit: "9efcd2d4"
+    scope: [deploy/deploy.py, image_scoring/agent.py, image_scoring/checker_agent.py, image_scoring/config.py, image_scoring/prompt.py,
+      image_scoring/sub_agents/image/__init__.py, image_scoring/sub_agents/image/imagen_agent.py, image_scoring/sub_agents/image/prompt.py,
+      image_scoring/sub_agents/image/tools/image_generation_tool.py, image_scoring/sub_agents/prompt/__init__.py, image_scoring/sub_agents/prompt/prompt.py,
+      image_scoring/sub_agents/prompt/prompt_agent.py, image_scoring/sub_agents/scoring/__init__.py, image_scoring/sub_agents/scoring/prompt.py,
+      image_scoring/sub_agents/scoring/scoring_agent.py, image_scoring/sub_agents/scoring/tools/get_images_tool.py, image_scoring/sub_agents/scoring/tools/set_score_tool.py,
+      image_scoring/tools/loop_condition_tool.py, image_scoring_adk_a2a_server/a2a_agent.py, image_scoring_adk_a2a_server/remote_a2a/image_scoring/agent.py,
+      image_scoring_adk_a2a_server/remote_a2a/image_scoring/checker_agent.py, image_scoring_adk_a2a_server/remote_a2a/image_scoring/config.py,
+      image_scoring_adk_a2a_server/remote_a2a/image_scoring/prompt.py, image_scoring_adk_a2a_server/remote_a2a/image_scoring/sub_agents/image/__init__.py,
+      image_scoring_adk_a2a_server/remote_a2a/image_scoring/sub_agents/image/imagen_agent.py, image_scoring_adk_a2a_server/remote_a2a/image_scoring/sub_agents/image/prompt.py,
+      image_scoring_adk_a2a_server/remote_a2a/image_scoring/sub_agents/image/tools/image_generation_tool.py, image_scoring_adk_a2a_server/remote_a2a/image_scoring/sub_agents/prompt/__init__.py,
+      image_scoring_adk_a2a_server/remote_a2a/image_scoring/sub_agents/prompt/prompt.py, image_scoring_adk_a2a_server/remote_a2a/image_scoring/sub_agents/prompt/prompt_agent.py,
+      image_scoring_adk_a2a_server/remote_a2a/image_scoring/sub_agents/scoring/__init__.py, image_scoring_adk_a2a_server/remote_a2a/image_scoring/sub_agents/scoring/prompt.py,
+      image_scoring_adk_a2a_server/remote_a2a/image_scoring/sub_agents/scoring/scoring_agent.py, image_scoring_adk_a2a_server/remote_a2a/image_scoring/sub_agents/scoring/tools/get_images_tool.py,
+      image_scoring_adk_a2a_server/remote_a2a/image_scoring/sub_agents/scoring/tools/set_score_tool.py, image_scoring_adk_a2a_server/remote_a2a/image_scoring/tools/loop_condition_tool.py]
+  issued:
+    by: A2AS.org
+    at: '2026-02-11T16:40:59Z'
+    url: https://a2as.org/certified/agents/haren-bh/multiagenthandson
+  signatures:
+    digest: sha256:BrAQ6Dw9_GRL3RitV8ywF2boPxgc5f_Fu9BqMLmAzag
+    key: ed25519:9stCYt3jDaxjo3I1NZ07Sc2Rok4sjWh65SXXWVMsUiI
+    sig: ed25519:4MwqZynanJKuseI43KjTunuXL4ErUoAI0XNhJnK2mmISxetVXzFbYJB8KyJb2JfGnM-6845hmsUzPSRVB2CnBw
+
+agents:
+  checker_agent_instance.0:
+    type: instance
+    models: [gemini-2.0-flash]
+    tools: [check_tool_condition]
+    params:
+      name: checker_agent
+      instruction: [You are an agent to evaluate the quality of image based on the total_score of the image, generation.,
+        1. Invoke the `image_generation_scoring_agent` first to generate images and score the images., 2. Use the 'check_condition_and_escalate_tool'
+          to evaluate if the total_score is greater than, the threshold or if loop has execeed the MAX_ITERATIONS., 'If the
+          total_score is greater than the threashold or if loop has execeed the MAX_ITERATIONS,', the loop will be terminated.,
+        'If the total_score is less than the threashold or if loop has not execeed the MAX_ITERATIONS,', the loop will continue.]
+      output_key: checker_output
+      instance: checker_agent_instance
+  checker_agent_instance.1:
+    type: instance
+    models: [gemini-2.0-flash]
+    tools: [check_tool_condition]
+    params:
+      name: checker_agent
+      instruction: [You are an agent to evaluate the quality of image based on the total_score of the image, generation.,
+        1. Invoke the `image_generation_scoring_agent` first to generate images and score the images., 2. Use the 'check_condition_and_escalate_tool'
+          to evaluate if the total_score is greater than, the threshold or if loop has execeed the MAX_ITERATIONS., 'If the
+          total_score is greater than the threashold or if loop has execeed the MAX_ITERATIONS,', the loop will be terminated.,
+        'If the total_score is less than the threashold or if loop has not execeed the MAX_ITERATIONS,', the loop will continue.]
+      output_key: checker_output
+      instance: checker_agent_instance
+  image_generation_agent.0:
+    type: instance
+    models: [gemini-2.0-flash]
+    tools: [generate_images]
+    params:
+      name: image_generation_agent
+      description: You are an expert in creating images with imagen 3
+      instruction: [Your job is to invoke the 'generate_images' tool by passing the `image generation prompt` provided, to
+          you as a parameter .]
+      output_key: output_image
+      instance: image_generation_agent
+  image_generation_agent.1:
+    type: instance
+    models: [gemini-2.0-flash]
+    tools: [generate_images]
+    params:
+      name: image_generation_agent
+      description: You are an expert in creating images with imagen 3
+      instruction: [Your job is to invoke the 'generate_images' tool by passing the `image generation prompt` provided, to
+          you as a parameter .]
+      output_key: output_image
+      instance: image_generation_agent
+  image_generation_prompt_agent.0:
+    type: instance
+    models: [gemini-2.0-flash]
+    tools: [get_policy]
+    params:
+      name: image_generation_prompt_agent
+      description: You are an expert in creating imagen3 prompts for image generation
+      instruction: ['Your primary objective: Transform the input text into a pair of highly optimized prompts—one positive
+          and', 'one negative—specifically designed for generating a visually compelling,', rule-compliant lockscreen image
+          using the Imagen3 text-to-image model (provided by Google/GCP)., 'Critical First Step: Before constructing any prompts,
+          you must first analyze the', 'input text to identify or conceptualize a primary subject. This subject MUST:', 1.
+          Be very much related to the input text presented. The viewer should, feel that the generated image of that subject
+          is conveying, what he/she is reading from that new article., '2. It should not  violate any content restrictions
+          (especially regarding humans,', 'politics, religion, etc.).', '3. Describe in detail on what we would like to represent
+          around the primary subject,', 'as-in, paint a complete picture.', This chosen subject will be the cornerstone of
+          your "Image Generation Prompt"., Invoke the 'get_policy_text' tool to obtain the 'policy_text'. The 'policy_text',
+        defines the rules for the image generation., The image also should comply with rules defined in the 'policy_text'.,
+        'Negative Prompt: Generate a negative prompt to ensure the image does not', violate the rules defined in the 'policy_text'.]
+      output_key: imagen_prompt
+      instance: image_generation_prompt_agent
+  image_generation_prompt_agent.1:
+    type: instance
+    models: [gemini-2.0-flash]
+    tools: [get_policy]
+    params:
+      name: image_generation_prompt_agent
+      description: You are an expert in creating imagen3 prompts for image generation
+      instruction: ['Your primary objective: Transform the input text into a pair of highly optimized prompts—one positive
+          and', 'one negative—specifically designed for generating a visually compelling,', rule-compliant lockscreen image
+          using the Imagen3 text-to-image model (provided by Google/GCP)., 'Critical First Step: Before constructing any prompts,
+          you must first analyze the', 'input text to identify or conceptualize a primary subject. This subject MUST:', 1.
+          Be very much related to the input text presented. The viewer should, feel that the generated image of that subject
+          is conveying, what he/she is reading from that new article., '2. It should not  violate any content restrictions
+          (especially regarding humans,', 'politics, religion, etc.).', '3. Describe in detail on what we would like to represent
+          around the primary subject,', 'as-in, paint a complete picture.', This chosen subject will be the cornerstone of
+          your "Image Generation Prompt"., Invoke the 'get_policy_text' tool to obtain the 'policy_text'. The 'policy_text',
+        defines the rules for the image generation., The image also should comply with rules defined in the 'policy_text'.,
+        'Negative Prompt: Generate a negative prompt to ensure the image does not', violate the rules defined in the 'policy_text'.]
+      output_key: imagen_prompt
+      instance: image_generation_prompt_agent
+  image_generation_scoring_agent.0:
+    type: instance
+    params:
+      name: image_generation_scoring_agent
+      description: "\n        Analyzes a input text and creates the image generation prompt, generates the relevant images\
+        \ with imagen3 and scores the images.\"\n        1. Invoke the image_generation_prompt_agent agent to generate the\
+        \ prompt for generating images\n        2. Invoke the image_generation_agent agent to generate the images\n      \
+        \  3. Invoke the scoring_images_prompt agent to score the images\n            "
+      sub_agents: [image_generation_prompt_agent, image_generation_agent, scoring_images_prompt]
+      instance: image_generation_scoring_agent
+  image_generation_scoring_agent.1:
+    type: instance
+    params:
+      name: image_generation_scoring_agent
+      description: "\n        Analyzes a input text and creates the image generation prompt, generates the relevant images\
+        \ with imagen3 and scores the images.\"\n        1. Invoke the image_generation_prompt_agent agent to generate the\
+        \ prompt for generating images\n        2. Invoke the image_generation_agent agent to generate the images\n      \
+        \  3. Invoke the scoring_images_prompt agent to score the images\n            "
+      instance: image_generation_scoring_agent
+      sub_agents: [image_generation_prompt_agent, image_generation_agent, scoring_images_prompt]
+  image_scoring.0:
+    type: instance
+    params:
+      name: image_scoring
+      description: Repeatedly runs a sequential process and checks a termination condition.
+      before_agent_callback: set_session
+      sub_agents: [image_generation_scoring_agent, checker_agent_instance]
+      instance: image_scoring
+  image_scoring.1:
+    type: instance
+    params:
+      name: image_scoring
+      description: Repeatedly runs a sequential process and checks a termination condition.
+      before_agent_callback: set_session
+      instance: image_scoring
+      sub_agents: [image_generation_scoring_agent, checker_agent_instance]
+  scoring_images_prompt.0:
+    type: instance
+    models: [gemini-2.0-flash]
+    tools: [get_policy, get_image, set_score]
+    params:
+      name: scoring_images_prompt
+      description: You are an expert in evaluating and scoring images based on various criteria provided to you.
+      instruction: ['"Your task is to evaluate an image based on a set of scoring rules. Follow these steps precisely:"',
+        '"1.  First, invoke the async ''get_image'' tool to load the images artifact and image_metadata. Do not try to generate
+          the image."        " Wait for the image to be loaded and the response"', '"2.  Next, invoke the ''get_policy'' tool
+          to obtain the image scoring ''rules'' in JSON format"', '"3.  Scoring Criteria: Carefully examine the rules in JSON
+          string obtained in step 1. For EACH rule described within this JSON string:"', '"    a.  Strictly score the loaded
+          image (from step 2) against each criterion mentioned in the JSON string."', '"    b.  Assign a score in a scale
+          of 0 to 5: 5 points if the image complies with a specific criterion, or 0 point if it does not."              "Also
+          specify the reason in a seperate attribute explaining the reason for assigning thew score"', '"4. An example of
+          the computed scoring criteria is as follows: "', '"Do not validate the JSON structure itself; only use its content
+          for scoring rules. "', '"5. Compute the total_score by adding each individual score point for each rule in the JSON
+          "', '"6. Invoke the set_score tool and pass the total_score. "', '"OUTPUT JSON FORMAT SPECIFICATION:', '"', '"The
+          JSON object MUST have exactly two top-level keys:"', '"  - ''total_score'': Iterate through each individual score
+          element in the json and add those to arrive at total_score. "', '"  - ''scores'': The existing rules json with a
+          score attribute assigned to each rule and a reason attribute"']
+      output_key: scoring
+      instance: scoring_images_prompt
+  scoring_images_prompt.1:
+    type: instance
+    models: [gemini-2.0-flash]
+    tools: [get_policy, get_image, set_score]
+    params:
+      name: scoring_images_prompt
+      description: You are an expert in evaluating and scoring images based on various criteria provided to you.
+      instruction: ['"Your task is to evaluate an image based on a set of scoring rules. Follow these steps precisely:"',
+        '"1.  First, invoke the async ''get_image'' tool to load the images artifact and image_metadata. Do not try to generate
+          the image."        " Wait for the image to be loaded and the response"', '"2.  Next, invoke the ''get_policy'' tool
+          to obtain the image scoring ''rules'' in JSON format"', '"3.  Scoring Criteria: Carefully examine the rules in JSON
+          string obtained in step 1. For EACH rule described within this JSON string:"', '"    a.  Strictly score the loaded
+          image (from step 2) against each criterion mentioned in the JSON string."', '"    b.  Assign a score in a scale
+          of 0 to 5: 5 points if the image complies with a specific criterion, or 0 point if it does not."              "Also
+          specify the reason in a seperate attribute explaining the reason for assigning thew score"', '"4. An example of
+          the computed scoring criteria is as follows: "', '"Do not validate the JSON structure itself; only use its content
+          for scoring rules. "', '"5. Compute the total_score by adding each individual score point for each rule in the JSON
+          "', '"6. Invoke the set_score tool and pass the total_score. "', '"OUTPUT JSON FORMAT SPECIFICATION:', '"', '"The
+          JSON object MUST have exactly two top-level keys:"', '"  - ''total_score'': Iterate through each individual score
+          element in the json and add those to arrive at total_score. "', '"  - ''scores'': The existing rules json with a
+          score attribute assigned to each rule and a reason attribute"']
+      output_key: scoring
+      instance: scoring_images_prompt
+
+models:
+  gemini-2.0-flash:
+    type: literal
+    agents: [checker_agent_instance.0, image_generation_agent.0, checker_agent_instance.1, scoring_images_prompt.0, image_generation_agent.1,
+      image_generation_prompt_agent.0, scoring_images_prompt.1, image_generation_prompt_agent.1]
+
+tools:
+  check_tool_condition:
+    type: function
+    agents: [checker_agent_instance.0, checker_agent_instance.1]
+  generate_images:
+    type: function
+    agents: [image_generation_agent.0, image_generation_agent.1]
+  get_image:
+    type: function
+    agents: [scoring_images_prompt.0, scoring_images_prompt.1]
+  get_policy:
+    type: function
+    agents: [scoring_images_prompt.0, image_generation_prompt_agent.0, scoring_images_prompt.1, image_generation_prompt_agent.1]
+  set_score:
+    type: function
+    agents: [scoring_images_prompt.0, scoring_images_prompt.1]
+
+teams:
+  image_generation_scoring_agent:
+    type: sequential
+    agents: [image_generation_scoring_agent, image_generation_prompt_agent, image_generation_agent, scoring_images_prompt]
+  image_generation_scoring_agent.1:
+    type: sequential
+    agents: [image_generation_scoring_agent.1, image_generation_prompt_agent, image_generation_agent, scoring_images_prompt]
+  image_scoring:
+    type: loop
+    agents: [image_scoring, image_generation_scoring_agent, checker_agent_instance]
+  image_scoring.1:
+    type: loop
+    agents: [image_scoring.1, image_generation_scoring_agent, checker_agent_instance]
+
+imports:
+  Agent: google.adk.agents.Agent
+  agent: agent
+  agent_engines: vertexai.agent_engines
+  CallbackContext: google.adk.agents.callback_context.CallbackContext
+  check_tool_condition: tools.loop_condition_tool.check_tool_condition
+  checker_agent_instance: checker_agent.checker_agent_instance
+  CHECKER_PROMPT: prompt.CHECKER_PROMPT
+  config: config
+  datetime: datetime.datetime
+  FunctionTool: google.adk.tools.FunctionTool
+  genai: google.genai
+  generate_images: tools.image_generation_tool.generate_images
+  get_image: tools.get_images_tool.get_image
+  get_policy: tools.fetch_policy_tool.get_policy
+  glob: glob
+  image_generation_agent: sub_agents.image.image_generation_agent
+  image_generation_prompt_agent: sub_agents.prompt.image_generation_prompt_agent
+  IMAGEGEN_PROMPT: prompt.IMAGEGEN_PROMPT
+  load_dotenv: dotenv.load_dotenv
+  logging: logging
+  LoopAgent: google.adk.agents.LoopAgent
+  os: os
+  PROMPT: prompt.PROMPT
+  RemoteA2aAgent: google.adk.agents.remote_a2a_agent.RemoteA2aAgent
+  root_agent: image_scoring.agent.root_agent
+  scoring_images_prompt: sub_agents.scoring.scoring_images_prompt
+  SCORING_PROMPT: prompt.SCORING_PROMPT
+  SequentialAgent: google.adk.agents.SequentialAgent
+  set_score: tools.set_score_tool.set_score
+  storage: google.cloud.storage
+  ToolContext: google.adk.tools.ToolContext
+  types: google.genai.types
+  uuid: uuid
+  vertexai: vertexai
+  ZoneInfo: zoneinfo.ZoneInfo
+
+functions:
+  check_condition_and_escalate_tool:
+    type: sync
+    module: image_scoring_adk_a2a_server.remote_a2a.image_scoring.tools.loop_condition_tool
+    args: [tool_context]
+    params:
+      returns: dict
+  generate_images:
+    type: async
+    module: image_scoring_adk_a2a_server.remote_a2a.image_scoring.sub_agents.image.tools.image_generation_tool
+    args: [imagen_prompt, tool_context]
+  get_image:
+    type: async
+    module: image_scoring.sub_agents.scoring.tools.get_images_tool
+    args: [tool_context]
+  get_policy:
+    type: sync
+    module: image_scoring_adk_a2a_server.remote_a2a.image_scoring.sub_agents.tools.fetch_policy_tool
+  save_to_gcs:
+    type: sync
+    module: image_scoring_adk_a2a_server.remote_a2a.image_scoring.sub_agents.image.tools.image_generation_tool
+    args: [tool_context, image_bytes, filename, counter]
+  set_score:
+    type: sync
+    module: image_scoring_adk_a2a_server.remote_a2a.image_scoring.sub_agents.scoring.tools.set_score_tool
+    args: [tool_context, total_score]
+    params:
+      returns: str
+  set_session:
+    type: sync
+    module: image_scoring.agent
+    args: [callback_context]
+
+variables:
+  GCS_BUCKET_NAME:
+    type: env
+    params:
+      caller: [os.environ.get, os.getenv]
+      path: [image_scoring.config, image_scoring_adk_a2a_server.remote_a2a.image_scoring.config]
+  GENAI_MODEL:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [image_scoring.config, image_scoring_adk_a2a_server.remote_a2a.image_scoring.config]
+  GOOGLE_CLOUD_LOCATION:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [deploy.deploy]
+  GOOGLE_CLOUD_PROJECT:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [deploy.deploy]
+  GOOGLE_CLOUD_STORAGE_BUCKET:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [deploy.deploy]
+  IMAGEN_MODEL:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [image_scoring.config, image_scoring_adk_a2a_server.remote_a2a.image_scoring.config]
+  MAX_ITERATIONS:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [image_scoring.config, image_scoring_adk_a2a_server.remote_a2a.image_scoring.config]
+  SCORE_THRESHOLD:
+    type: env
+    params:
+      caller: [os.getenv]
+      path: [image_scoring.config, image_scoring_adk_a2a_server.remote_a2a.image_scoring.config]
+
+files:
+  ../../policy.json:
+    type: pattern
+    actions: [read]
+    params:
+      caller: [os.path.join]
+      pattern: [script_dir, ../../policy.json]
+  .env:
+    type: pattern
+    actions: [read]
+    params:
+      caller: [os.path.join]
+      pattern: [os.path.dirname(), "..", image_scoring, .env]
+  policy_file_path:
+    type: variable
+    actions: [read]
+    params:
+      caller: [open]
+      alias: [file]
+  requirements.txt:
+    type: pattern
+    actions: [read]
+    params:
+      caller: [os.path.join]
+      pattern: [os.getcwd(), requirements.txt]
+
+networks:
+  localhost:
+    type: api
+    actions: [GET]
+    urls: [/a2a/image_scoring/.well-known/agent.json]
+    protocols: [http]
+    ports: ["8001"]
+    params:
+      links: [agent_card]
