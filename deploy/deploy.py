@@ -2,11 +2,12 @@ import vertexai
 from image_scoring.agent import root_agent
 import os
 import glob # To easily find the wheel file
-from dotenv import load_dotenv
+from dotenv import load_dotenv, dotenv_values
 
 # Load environment variables from image_scoring/.env
 env_path = os.path.join(os.path.dirname(__file__), "..", "image_scoring", ".env")
 load_dotenv(env_path)
+deploy_env_vars = {k: str(v) for k, v in dotenv_values(env_path).items() if v is not None}
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
 LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
@@ -29,7 +30,7 @@ remote_app = client.agent_engines.create(
         "extra_packages": [
             "./dist/image_scoring-0.1.0-py3-none-any.whl",
         ],
-        "env_vars":{"GCS_BUCKET_NAME":os.getenv('GOOGLE_CLOUD_STORAGE_BUCKET')}
+        "env_vars": deploy_env_vars
     }
 )
 
