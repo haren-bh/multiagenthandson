@@ -49,6 +49,33 @@ async def call_agent_engine(
     ):
         print(event)
 
+    # Retrieve and print GCS image URIs from the session state
+    try:
+        from google.adk.sessions import VertexAiSessionService
+        engine_id_short = reasoning_engine_id.split('/')[-1]
+        session_service = VertexAiSessionService(
+            project=project_id,
+            location=location,
+            agent_engine_id=engine_id_short
+        )
+        session = await session_service.get_session(
+            app_name=engine_id_short,
+            user_id="u_456",
+            session_id=remote_session["id"]
+        )
+        if session and session.state:
+            gcs_uris = [v for k, v in session.state.items() if k.startswith("generated_image_gcs_uri_")]
+            if gcs_uris:
+                print("\n" + "="*80)
+                print("SUCCESS: Your generated image(s) can be found at the following Cloud Storage address(es):")
+                for uri in gcs_uris:
+                    print(f"  -> {uri}")
+                print("="*80 + "\n")
+            else:
+                print("\nNo GCS image URIs found in the session state.")
+    except Exception as e_state:
+        print(f"\nCould not fetch session state from Vertex AI: {e_state}")
+
 def get_agent_engine_list(project_id,location,staging_bucket):
     vertexai.init(
         project=project_id,
@@ -63,27 +90,29 @@ def get_agent_engine_list(project_id,location,staging_bucket):
 
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
-LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+LOCATION = os.getenv("AGENT_ENGINE_LOCATION")
 STAGING_BUCKET = f"gs://{os.getenv('GOOGLE_CLOUD_STORAGE_BUCKET')}"
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+        level=logging.WARNING, format="%(asctime)s - %(levelname)s - %(message)s"
     )
-    REASONING_ENGINE_ID = "projects/xxx/locations/us-central1/reasoningEngines/xxx"  # TODO: Change this
-    #REASONING_ENGINE_ID="projects/85469421903/locations/us-central1/reasoningEngines/428031080600174592"
 
-    prompt = "Create image of a cat"
+    # Prompt the user for REASONING_ENGINE_ID
+    print("\nPlease enter your REASONING_ENGINE_ID.")
+    print("Hint: It looks like (projects/78833623456/locations/us-central1/reasoningEngines/1153697210060242944)")
+    reasoning_engine_id = input("REASONING_ENGINE_ID: ").strip()
 
-    #engines=get_agent_engine_list(PROJECT_ID,LOCATION,STAGING_BUCKET)
-    #REASONING_ENGINE_ID=engines[0].resource_name
+    # Prompt the user for the image prompt
+    prompt = input("\nDescribe the image you want to create: ").strip()
+
     try:
         response_stream = asyncio.run(call_agent_engine(
             prompt=prompt,
             project_id=PROJECT_ID,
             location=LOCATION,
             staging_bucket=STAGING_BUCKET,
-            reasoning_engine_id=REASONING_ENGINE_ID,
+            reasoning_engine_id=reasoning_engine_id,
         ))
     except Exception as e:
         logging.error(f"An error occurred: {e}", exc_info=True)

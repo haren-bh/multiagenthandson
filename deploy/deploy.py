@@ -7,10 +7,20 @@ from dotenv import load_dotenv, dotenv_values
 # Load environment variables from image_scoring/.env
 env_path = os.path.join(os.path.dirname(__file__), "..", "image_scoring", ".env")
 load_dotenv(env_path)
-deploy_env_vars = {k: str(v) for k, v in dotenv_values(env_path).items() if v is not None}
+allowed_keys = {
+    "AGENT_ENGINE_LOCATION",
+    "GOOGLE_CLOUD_LOCATION",
+    "GOOGLE_GENAI_USE_VERTEXAI",
+    "GOOGLE_CLOUD_STORAGE_BUCKET",
+    "GCS_BUCKET_NAME",
+    "SCORE_THRESHOLD",
+    "IMAGEN_MODEL",
+    "GENAI_MODEL"
+}
+deploy_env_vars = {k: str(v) for k, v in dotenv_values(env_path).items() if k in allowed_keys and v is not None}
 
 PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
-LOCATION = os.getenv("GOOGLE_CLOUD_LOCATION", "us-central1")
+LOCATION = os.getenv("AGENT_ENGINE_LOCATION")
 STAGING_BUCKET = f"gs://{os.getenv('GOOGLE_CLOUD_STORAGE_BUCKET')}"
 
 from vertexai import agent_engines
